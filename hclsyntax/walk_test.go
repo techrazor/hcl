@@ -2,17 +2,14 @@ package hclsyntax
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
-	"github.com/go-test/deep"
+	"github.com/google/go-cmp/cmp"
 
 	"github.com/hashicorp/hcl/v2"
 )
 
 func TestWalk(t *testing.T) {
-
 	tests := []struct {
 		src  string
 		want []testWalkCall
@@ -146,11 +143,8 @@ func TestWalk(t *testing.T) {
 			}
 
 			got := w.Calls
-			if !reflect.DeepEqual(got, test.want) {
-				t.Errorf("wrong calls\ngot: %swant: %s", spew.Sdump(got), spew.Sdump(test.want))
-				for _, problem := range deep.Equal(got, test.want) {
-					t.Errorf(problem)
-				}
+			if diff := cmp.Diff(test.want, got, exportEverything); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
 			}
 		})
 	}

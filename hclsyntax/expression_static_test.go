@@ -1,12 +1,15 @@
 package hclsyntax
 
 import (
+	"reflect"
 	"testing"
 
-	"github.com/go-test/deep"
+	"github.com/google/go-cmp/cmp"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/zclconf/go-cty/cty"
 )
+
+var exportEverything = cmp.Exporter(func(reflect.Type) bool { return true })
 
 func TestTraversalStatic(t *testing.T) {
 	expr, diags := ParseExpression([]byte(`a.b.c`), "", hcl.Pos{Line: 1, Column: 1})
@@ -45,8 +48,8 @@ func TestTraversalStatic(t *testing.T) {
 		},
 	}
 
-	for _, problem := range deep.Equal(got, want) {
-		t.Errorf(problem)
+	if diff := cmp.Diff(want, got, exportEverything); diff != "" {
+		t.Errorf("unexpected diff: %s", diff)
 	}
 }
 
@@ -83,8 +86,8 @@ func TestTupleStatic(t *testing.T) {
 		got[i] = val
 	}
 
-	for _, problem := range deep.Equal(got, want) {
-		t.Errorf(problem)
+	if diff := cmp.Diff(want, got, exportEverything); diff != "" {
+		t.Errorf("unexpected diff: %s", diff)
 	}
 }
 
@@ -125,7 +128,7 @@ func TestMapStatic(t *testing.T) {
 		got[key] = val
 	}
 
-	for _, problem := range deep.Equal(got, want) {
-		t.Errorf(problem)
+	if diff := cmp.Diff(want, got, exportEverything); diff != "" {
+		t.Errorf("unexpected diff: %s", diff)
 	}
 }

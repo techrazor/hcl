@@ -1,16 +1,19 @@
 package hclsyntax
 
 import (
+	"reflect"
 	"testing"
 
-	"github.com/go-test/deep"
+	// "github.com/go-test/deep"
+	"github.com/google/go-cmp/cmp"
+	// "github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/zclconf/go-cty/cty"
 )
 
-func init() {
-	deep.MaxDepth = 999
-}
+// func init() {
+// 	deep.MaxDepth = 999
+// }
 
 func TestParseConfig(t *testing.T) {
 	tests := []struct {
@@ -1568,7 +1571,7 @@ block "valid" {}
 			},
 		},
 		{
-			"a = <<EOT\nHello\nEOT\nb = \"Hi\"",
+			"a = <<-EOT\n Hjello\nEOT\nb = \"Hi\"",
 			0,
 			&Body{
 				Attributes: Attributes{
@@ -2557,10 +2560,13 @@ block "valid" {}
 
 			got := file.Body
 
-			if diff := deep.Equal(got, test.want); diff != nil {
-				for _, problem := range diff {
-					t.Errorf(problem)
-				}
+			// if diff := deep.Equal(got, test.want); diff != nil {
+			// 	for _, problem := range diff {
+			// 		t.Errorf(problem)
+			// 	}
+			// }
+			if diff := cmp.Diff(got, test.want, cmp.Exporter(func(reflect.Type) bool { return true })); diff != "" {
+				t.Errorf(diff)
 			}
 		})
 	}
@@ -2826,10 +2832,13 @@ func TestParseConfigDiagnostics(t *testing.T) {
 			t.Logf("\n%s", test.input)
 			_, diags := ParseConfig([]byte(test.input), "test.hcl", hcl.InitialPos)
 
-			if diff := deep.Equal(diags, test.want); diff != nil {
-				for _, problem := range diff {
-					t.Errorf(problem)
-				}
+			// if diff := deep.Equal(diags, test.want); diff != nil {
+			// 	for _, problem := range diff {
+			// 		t.Errorf(problem)
+			// 	}
+			// }
+			if diff := cmp.Diff(diags, test.want); diff != "" {
+				t.Errorf(diff)
 			}
 		})
 	}

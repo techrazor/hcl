@@ -3,7 +3,7 @@ package hclsyntax
 import (
 	"testing"
 
-	"github.com/go-test/deep"
+	"github.com/google/go-cmp/cmp"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/zclconf/go-cty/cty"
 )
@@ -217,10 +217,8 @@ func TestParseTraversalAbs(t *testing.T) {
 				t.Errorf("wrong number of diagnostics %d; want %d", len(diags), test.diagCount)
 			}
 
-			if diff := deep.Equal(got, test.want); diff != nil {
-				for _, problem := range diff {
-					t.Error(problem)
-				}
+			if diff := cmp.Diff(test.want, got, exportEverything); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
 			}
 		})
 	}

@@ -2,15 +2,14 @@ package json
 
 import (
 	"math/big"
+	"reflect"
 	"testing"
 
-	"github.com/go-test/deep"
+	"github.com/google/go-cmp/cmp"
 	"github.com/hashicorp/hcl/v2"
 )
 
-func init() {
-	deep.MaxDepth = 999
-}
+var exportEverything = cmp.Exporter(func(reflect.Type) bool { return true })
 
 func TestParse(t *testing.T) {
 	tests := []struct {
@@ -607,10 +606,8 @@ func TestParse(t *testing.T) {
 				}
 			}
 
-			if diff := deep.Equal(got, test.Want); diff != nil {
-				for _, problem := range diff {
-					t.Error(problem)
-				}
+			if diff := cmp.Diff(test.Want, got, exportEverything); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
 			}
 		})
 	}
@@ -649,10 +646,8 @@ func TestParseWithPos(t *testing.T) {
 				}
 			}
 
-			if diff := deep.Equal(got, test.Want); diff != nil {
-				for _, problem := range diff {
-					t.Error(problem)
-				}
+			if diff := cmp.Diff(test.Want, got, exportEverything); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
 			}
 		})
 	}
