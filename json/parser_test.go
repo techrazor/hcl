@@ -654,7 +654,11 @@ func TestParseWithPos(t *testing.T) {
 }
 
 func mustBigFloat(s string) *big.Float {
-	f, _, err := (&big.Float{}).Parse(s, 10)
+	// TODO KEM
+	// why is mantissa still wrong?? big.RoundingMode?
+	// f, _, err := (&big.Float{}).Parse(s, 10)
+	f, _, err := big.ParseFloat(s, 10, 512, big.ToNearestEven)
+
 	if err != nil {
 		panic(err)
 	}

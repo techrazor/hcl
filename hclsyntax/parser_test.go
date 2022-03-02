@@ -2318,6 +2318,9 @@ block "valid" {}
 					"a": {
 						Name: "a",
 						Expr: &LiteralValueExpr{
+							// TODO KEM
+							// ends up with a cty.Val here with a null cty.Type{}, which is not valid
+							// should be the unknown type
 							SrcRange: hcl.Range{
 								Start: hcl.Pos{Line: 1, Column: 5, Byte: 4},
 								End:   hcl.Pos{Line: 1, Column: 6, Byte: 5},
