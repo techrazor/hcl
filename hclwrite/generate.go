@@ -203,6 +203,17 @@ func appendTokensForValue(val cty.Value, toks Tokens) Tokens {
 			Bytes: src,
 		})
 
+	case val.Type() == cty.DynamicPseudoType:
+		// TODO: If it's a multi-line string ending in a newline, format
+		// it as a HEREDOC instead.
+		src := escapeQuotedStringLit(val.AsString())
+		if len(src) > 0 {
+			toks = append(toks, &Token{
+				Type:  hclsyntax.TokenQuotedLit,
+				Bytes: src,
+			})
+		}
+
 	case val.Type() == cty.Number:
 		bf := val.AsBigFloat()
 		srcStr := bf.Text('f', -1)
