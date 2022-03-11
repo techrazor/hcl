@@ -209,7 +209,7 @@ func appendTokensForValue(val cty.Value, toks Tokens) Tokens {
 		src := escapeQuotedStringLit(val.AsString())
 		if len(src) > 0 {
 			toks = append(toks, &Token{
-				Type:  hclsyntax.TokenQuotedLit,
+				Type:  hclsyntax.TokenIdent,
 				Bytes: src,
 			})
 		}
